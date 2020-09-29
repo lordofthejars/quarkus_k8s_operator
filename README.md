@@ -6,6 +6,15 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework to create a K
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
+## Creating the .mvn folder for the Maven Wrapper
+
+This project is based on the Maven Wrapper, that needs a .mvn folder created with the wrapper jar inside
+
+Execute following command the first time you are going to build the project :
+```
+mvn -N io.takari:maven:wrapper
+```
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -31,6 +40,22 @@ You can then execute your native executable with: `./target/pizza-operator-1.0-S
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
 
+## Publishing the operator on Quay
+
+The different deployment yaml files are using a public accessible container image of our operator
+
+To create the container image we should do :
+```
+docker build -f src/main/docker/Dockerfile.native -t quay.io/{your-quay-user}/pizza-operator-native .
+```
+
+And now it's the turn to push this image to Quay ( quay.io)
+
+```
+docker login quay.io
+docker push quay.io/{your-quay-user}/pizza-operator-native
+```
+
 ## Testing
 
 By default, Pods in Kubernetes do not have the permission to list other pods. Therefore, we need to create a cluster role, a service account, and a cluster role binding.
@@ -40,6 +65,17 @@ By default, Pods in Kubernetes do not have the permission to list other pods. Th
     kubectl apply -f k8s_files/operator.clusterrolebinding.yaml
 
 Now you can run the `kubectl apply -f k8s_files/operator.crd.yaml` command to register the CRD in the cluster. 
+
+Now it's the time to modify the deployment file `operator-deployment.yaml` to point to your image
+
+Changing
+```
+        - image: quarkus/pizza-operator-native
+```
+by
+```
+        - image: {your-quay-user}/pizza-operator-native
+```
 
 Run the `kubectl apply -f k8s_files/operator.deployment.yaml` command to register the operator.
 
