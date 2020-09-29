@@ -14,6 +14,6 @@ spec:
     spec:
       serviceAccountName: quarkus-operator-example
       containers:
-        - image: quarkus/pizza-operator-native
+        - image: quay.io/quarkus/pizza-operator-native
           name: quarkus-operator-example
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
